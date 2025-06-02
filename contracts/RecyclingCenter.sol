@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity =0.8.26;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./CircularNFT.sol";
@@ -17,10 +17,7 @@ contract RecyclingCenter is Ownable {
     uint256 public rewardAmount; // Cambiado de constant a variable pública
 
     // Eventos
-    event CenterAuthorized(address indexed center);
-    event CenterDeauthorized(address indexed center);
-    event ProductRecycled(address indexed user, uint256 indexed tokenId, uint256 rewardAmount);
-    event RewardAmountUpdated(uint256 oldAmount, uint256 newAmount);
+    event ProductRecycled(address indexed user, uint256 indexed tokenId);
 
     constructor(
         address initialOwner,
@@ -35,13 +32,11 @@ contract RecyclingCenter is Ownable {
     // Función para autorizar un centro de reciclaje
     function authorizeCenter(address center) external onlyOwner {
         authorizedCenters[center] = true;
-        emit CenterAuthorized(center);
     }
 
     // Función para desautorizar un centro de reciclaje
     function deauthorizeCenter(address center) external onlyOwner {
         authorizedCenters[center] = false;
-        emit CenterDeauthorized(center);
     }
 
     // Función principal para reciclar un producto
@@ -55,14 +50,6 @@ contract RecyclingCenter is Ownable {
         // Mintear tokens de recompensa
         rewardToken.mint(user, rewardAmount);
 
-        emit ProductRecycled(user, tokenId, rewardAmount);
-    }
-
-    // Función para actualizar la cantidad de recompensa
-    function updateRewardAmount(uint256 newAmount) external onlyOwner {
-        require(newAmount > 0, "Reward amount must be greater than 0");
-        uint256 oldAmount = rewardAmount;
-        rewardAmount = newAmount;
-        emit RewardAmountUpdated(oldAmount, newAmount);
+        emit ProductRecycled(user, tokenId);
     }
 } 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity ^0.8.26;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -15,7 +15,7 @@ contract CircularNFT is ERC721, Ownable {
     address public recyclingCenter;
 
     // Eventos
-    event NFTMinted(address indexed to, uint256 indexed tokenId, string tokenURI);
+    event NFTMinted(address indexed to, uint256 indexed tokenId);
     event NFTBurned(uint256 indexed tokenId);
 
     constructor(address initialOwner) 
@@ -36,32 +36,21 @@ contract CircularNFT is ERC721, Ownable {
     {
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, _tokenURI);
-
-        emit NFTMinted(to, tokenId, _tokenURI);
+        _tokenURIs[tokenId] = _tokenURI;
+        emit NFTMinted(to, tokenId);
         return tokenId;
     }
 
     // Función para quemar NFTs (solo el RecyclingCenter puede hacerlo)
     function burn(uint256 tokenId) external {
         require(msg.sender == recyclingCenter, "Only recycling center can burn");
-        require(ownerOf(tokenId) != address(0), "Token does not exist");
-        
         _burn(tokenId);
         delete _tokenURIs[tokenId];
-
         emit NFTBurned(tokenId);
-    }
-
-    // Función para establecer el URI del token
-    function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal {
-        require(ownerOf(tokenId) != address(0), "Token does not exist");
-        _tokenURIs[tokenId] = _tokenURI;
     }
 
     // Función para obtener el URI del token
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(ownerOf(tokenId) != address(0), "Token does not exist");
         return _tokenURIs[tokenId];
     }
 } 

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.22;
+pragma solidity =0.8.26;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -7,9 +7,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract RewardToken is ERC20, Ownable {
     // Dirección del contrato RecyclingCenter
     address public recyclingCenter;
-
-    // Eventos
-    event TokensMinted(address indexed to, uint256 amount);
 
     constructor(address initialOwner) 
         ERC20("Circular Reward Token", "CIRC")
@@ -25,7 +22,6 @@ contract RewardToken is ERC20, Ownable {
     function mint(address to, uint256 amount) external {
         require(msg.sender == recyclingCenter, "Only recycling center can mint");
         _mint(to, amount);
-        emit TokensMinted(to, amount);
     }
 
     // Función para quemar tokens
